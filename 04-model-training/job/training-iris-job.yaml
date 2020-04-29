@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: training-iris-job
+spec:
+  template:
+    metadata:
+      name: training-iris-job
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      containers:
+        - command:
+            - python
+            - /app/sklearn_iris.py
+          image: kangwoo/training-iris-job:0.0.1
+          imagePullPolicy: IfNotPresent
+          name: job
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "512Mi"
+            limits:
+              cpu: "2000m"
+              memory: "1Gi"
+      restartPolicy: Never
