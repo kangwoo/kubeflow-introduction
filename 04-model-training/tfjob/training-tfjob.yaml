@@ -1,0 +1,38 @@
+apiVersion: kubeflow.org/v1
+kind: TFJob
+metadata:
+  name: training-tfjob
+spec:
+  cleanPodPolicy: All
+  tfReplicaSpecs:
+    Chief:
+      replicas: 1
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+          name: tensorflow
+        spec:
+          containers:
+            - command:
+                - python
+                - mnist_dist.py
+              image: kangwoo/training-tfjob:0.0.1
+              name: tensorflow
+          restartPolicy: Never
+    Worker:
+      replicas: 2
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+          name: tensorflow
+        spec:
+          containers:
+            - command:
+                - python
+                - mnist_dist.py
+              image: kangwoo/training-tfjob:0.0.1
+              name: tensorflow
+          restartPolicy: Never
+

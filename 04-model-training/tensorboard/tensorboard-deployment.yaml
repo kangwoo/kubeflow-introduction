@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tensorboard
+  name: tensorboard
+spec:
+  selector:
+    matchLabels:
+      app: tensorboard
+  template:
+    metadata:
+      labels:
+        app: tensorboard
+    spec:
+      serviceAccount: default-editor
+      containers:
+      - command:
+        - /usr/local/bin/tensorboard
+        - --logdir=/app/data/logs
+        - --path_prefix=/tensorboard/
+        - --port=80
+        image: tensorflow/tensorflow:2.1.0-py3
+        name: tensorboard
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /app/data
+          name: tfjob-data
+      volumes:
+      - name: tfjob-data
+        persistentVolumeClaim:
+          claimName: tfjob-data-pvc

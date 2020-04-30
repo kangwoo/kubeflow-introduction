@@ -1,0 +1,45 @@
+apiVersion: kubeflow.org/v1
+kind: TFJob
+metadata:
+  name: training-tb-tfjob
+spec:
+  cleanPodPolicy: All
+  tfReplicaSpecs:
+    Chief:
+      replicas: 1
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+          name: tensorflow
+        spec:
+          containers:
+            - command:
+                - python
+                - mnist_dist_tb.py
+              image: kangwoo/training-tb-tfjob:0.0.1
+              name: tensorflow
+              volumeMounts:
+                - mountPath: /app/data
+                  name: tfjob-data
+          restartPolicy: Never
+          volumes:
+          - name: tfjob-data
+            persistentVolumeClaim:
+              claimName: tfjob-data-pvc
+    Worker:
+      replicas: 2
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+          name: tensorflow
+        spec:
+          containers:
+            - command:
+                - python
+                - mnist_dist_tb.py
+              image: kangwoo/training-tb-tfjob:0.0.1
+              name: tensorflow
+          restartPolicy: Never
+
