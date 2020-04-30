@@ -1,0 +1,58 @@
+apiVersion: kubeflow.org/v1alpha2
+kind: MPIJob
+metadata:
+  name: training-mpijob
+spec:
+  slotsPerWorker: 1
+  cleanPodPolicy: Running
+  mpiReplicaSpecs:
+    Launcher:
+      replicas: 1
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+        spec:
+          containers:
+          - image: kangwoo/training-mpijob:0.0.1
+            name: mpi-launcher
+            command:
+            - mpirun
+            args:
+            - -np
+            - "2"
+            - --allow-run-as-root
+            - -bind-to
+            - none
+            - -map-by
+            - slot
+            - -x
+            - LD_LIBRARY_PATH
+            - -x
+            - PATH
+            - -mca
+            - pml
+            - ob1
+            - -mca
+            - btl
+            - ^openib
+            - python
+            - /app/mnist.py
+            resources:
+              limits:
+                cpu: 1
+                memory: 2Gi
+    Worker:
+      replicas: 2
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+        spec:
+          containers:
+          - image: kangwoo/training-mpijob:0.0.1
+            name: mpi-worker
+            resources:
+              limits:
+                cpu: 1
+                memory: 2Gi

@@ -1,0 +1,40 @@
+apiVersion: "kubeflow.org/v1beta1"
+kind: "MXJob"
+metadata:
+  name: "training-mxjob"
+spec:
+  jobMode: MXTrain
+  mxReplicaSpecs:
+    Scheduler:
+      replicas: 1
+      restartPolicy: Never
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+        spec:
+          containers:
+            - name: mxnet
+              image: kangwoo/training-mxjob:0.0.1
+    Server:
+      replicas: 1
+      restartPolicy: Never
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+        spec:
+          containers:
+            - name: mxnet
+              image: kangwoo/training-mxjob:0.0.1
+    Worker:
+      replicas: 1
+      restartPolicy: Never
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+        spec:
+          containers:
+            - name: mxnet
+              image: kangwoo/training-mxjob:0.0.1
