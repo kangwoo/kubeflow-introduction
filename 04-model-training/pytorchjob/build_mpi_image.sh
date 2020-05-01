@@ -8,4 +8,3 @@ cd "$(dirname "$0")"
 
 docker build -t "$full_image_name" . -f Dockerfile-mpi
 docker push "$full_image_name"
-
