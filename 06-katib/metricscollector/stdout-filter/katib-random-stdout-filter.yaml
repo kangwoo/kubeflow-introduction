@@ -1,0 +1,59 @@
+apiVersion: "kubeflow.org/v1alpha3"
+kind: Experiment
+metadata:
+  name: katib-random-stdout-filter
+  namespace: admin
+spec:
+  metricsCollectorSpec:
+    collector:
+      kind: StdOut
+    source:
+      filter:
+        metricsFormat:
+          - "([\\w|-]+)\\s*:\\s*((-?\\d+)(\\.\\d+)?)"
+  parallelTrialCount: 1
+  maxTrialCount: 12
+  maxFailedTrialCount: 3
+  objective:
+    type: maximize
+    goal: 0.99
+    objectiveMetricName: val_accuracy
+    additionalMetricNames:
+      - accuracy
+  algorithm:
+    algorithmName: random
+  parameters:
+    - name: --learning_rate
+      parameterType: double
+      feasibleSpace:
+        min: "0.01"
+        max: "0.2"
+    - name: --dropout
+      parameterType: double
+      feasibleSpace:
+        min: "0.1"
+        max: "0.5"
+  trialTemplate:
+    goTemplate:
+        rawTemplate: |-
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: {{.Trial}}
+            namespace: {{.NameSpace}}
+          spec:
+            template:
+              spec:
+                containers:
+                - name: {{.Trial}}
+                  image: kangwoo/katib-stdout-filter:0.0.1
+                  imagePullPolicy: Always
+                  command:
+                  - "python3"
+                  - "/app/katib_stdout_filter.py"
+                  {{- with .HyperParameters}}
+                  {{- range .}}
+                  - "{{.Name}}={{.Value}}"
+                  {{- end}}
+                  {{- end}}
+                restartPolicy: Never
