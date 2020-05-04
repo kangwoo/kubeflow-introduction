@@ -1,0 +1,16 @@
+name: Multiply component
+description: Multiply component
+inputs:
+  - {name: input_1, type: String, description: 'Data for Input 1'}
+  - {name: parameter_1, type: Integer, default: '1', description: 'Parameter 1 description'}
+outputs:
+  - {name: output_1, description: 'Output 1 data'}
+implementation:
+  container:
+    image: kangwoo/kfp-component-multiply:latest
+    command: [
+      python3, /pipelines/component/src/program.py,
+      --input-path,  {inputPath:  input_1},
+      --param,       {inputValue: parameter_1},
+      --output-path, {outputPath: output_1},
+    ]
