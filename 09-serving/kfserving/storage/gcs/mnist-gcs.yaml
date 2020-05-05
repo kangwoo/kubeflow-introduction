@@ -1,0 +1,10 @@
+apiVersion: "serving.kubeflow.org/v1alpha2"
+kind: "InferenceService"
+metadata:
+  name: "mnist-gcs"
+spec:
+  default:
+    predictor:
+      serviceAccountName: gcs-sa
+      tensorflow:
+        storageUri: "gs://kfp-bucket/mnist/model"

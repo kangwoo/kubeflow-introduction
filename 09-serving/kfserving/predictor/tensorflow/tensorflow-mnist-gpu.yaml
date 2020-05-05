@@ -1,0 +1,13 @@
+apiVersion: "serving.kubeflow.org/v1alpha2"
+kind: "InferenceService"
+metadata:
+  name: "tensorflow-mnist-gpu"
+spec:
+  default:
+    predictor:
+      tensorflow:
+        storageUri: "pvc://kfserving-models-pvc/models/tensorflow/mnist/"
+        runtimeVersion: "1.14.0-gpu"
+        resources:
+          limits:
+            nvidia.com/gpu: 1

@@ -1,0 +1,14 @@
+apiVersion: "serving.kubeflow.org/v1alpha2"
+kind: "InferenceService"
+metadata:
+  name: "tensorflow-mnist"
+spec:
+  default:
+    predictor:
+      tensorflow:
+        storageUri: "pvc://kfserving-models-pvc/models/tensorflow/mnist/"
+  canaryTrafficPercent: 10
+  canary:
+    predictor:
+      tensorflow:
+        storageUri: "pvc://kfserving-models-pvc/models/tensorflow/mnist/"
